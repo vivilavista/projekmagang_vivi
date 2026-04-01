@@ -12,15 +12,26 @@
             style="font-size:0.78rem;">
             <i class="bi bi-calendar-plus me-1"></i>Form Booking
         </a>
-        <div class="d-flex align-items-center gap-2">
-            <div
-                style="width:34px;height:34px;border-radius:9px;background:var(--c-lightest);display:flex;align-items:center;justify-content:center;">
-                <i class="bi bi-person-fill" style="color:var(--c-dark);"></i>
+        <div class="dropdown">
+            <div class="d-flex align-items-center gap-2" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                <div style="width:34px;height:34px;border-radius:9px;background:var(--c-lightest);display:flex;align-items:center;justify-content:center;">
+                    <i class="bi bi-person-fill" style="color:var(--c-dark);"></i>
+                </div>
+                <div>
+                    <div class="fw-semibold" style="font-size:0.82rem;color:var(--c-dark);">{{ auth()->user()->nama }}</div>
+                    <span class="role-badge role-{{ auth()->user()->role }}">{{ ucfirst(auth()->user()->role) }}</span>
+                </div>
             </div>
-            <div>
-                <div class="fw-semibold" style="font-size:0.82rem;color:var(--c-dark);">{{ auth()->user()->nama }}</div>
-                <span class="role-badge role-{{ auth()->user()->role }}">{{ ucfirst(auth()->user()->role) }}</span>
-            </div>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" style="border-radius: 12px; min-width: 200px;">
+                <li>
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="dropdown-item text-danger py-2">
+                            <i class="bi bi-box-arrow-right me-2"></i>Logout Aman
+                        </button>
+                    </form>
+                </li>
+            </ul>
         </div>
     </div>
 </div>

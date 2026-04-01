@@ -24,19 +24,19 @@
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Nama Lengkap <span class="text-danger">*</span></label>
                         <input type="text" name="nama_tamu" class="form-control @error('nama_tamu') is-invalid @enderror"
-                            value="{{ old('nama_tamu') }}" required placeholder="Nama sesuai KTP">
+                            value="{{ old('nama_tamu', auth()->check() ? auth()->user()->nama : '') }}" required placeholder="Nama sesuai KTP">
                         @error('nama_tamu')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">NIK <small class="text-muted">(16 digit)</small></label>
                         <input type="text" name="nik" class="form-control @error('nik') is-invalid @enderror"
-                            value="{{ old('nik') }}" placeholder="3271xxxxxxxxxxxxxx" maxlength="16">
+                            value="{{ old('nik', auth()->check() ? auth()->user()->nik : '') }}" placeholder="3271xxxxxxxxxxxxxx" maxlength="16">
                         @error('nik')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">No HP <span class="text-danger">*</span></label>
                         <input type="text" name="no_hp" class="form-control @error('no_hp') is-invalid @enderror"
-                            value="{{ old('no_hp') }}" required placeholder="08xxxxxxxxxx">
+                            value="{{ old('no_hp', auth()->check() ? auth()->user()->no_hp : '') }}" required placeholder="08xxxxxxxxxx">
                         @error('no_hp')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
                     <div class="col-md-6">
@@ -78,10 +78,21 @@
                 <button type="submit" class="btn btn-primary w-100 mt-4 py-2 fw-semibold">
                     <i class="bi bi-send me-2"></i>Daftar Kunjungan
                 </button>
-                <p class="text-center text-muted small mt-3">
+            </form>
+            
+            @auth
+                <div class="text-center mt-3 pt-3 border-top">
+                    <span class="text-muted small">Login sebagai <strong>{{ auth()->user()->nama }}</strong>. Bukan Anda?</span>
+                    <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn btn-link p-0 m-0 align-baseline text-decoration-none small">Keluar (Logout)</button>
+                    </form>
+                </div>
+            @else
+                <p class="text-center text-muted small mt-4">
                     Sudah punya akun? <a href="{{ route('login') }}">Login di sini</a>
                 </p>
-            </form>
+            @endauth
         </div>
     </div>
 
