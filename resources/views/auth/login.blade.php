@@ -113,6 +113,13 @@
         <h3>Buku Tamu Digital</h3>
         <p class="subtitle">Sistem Manajemen Kunjungan</p>
 
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show rounded-3" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
         @if ($errors->any())
             <div class="alert alert-danger alert-dismissible fade show rounded-3" role="alert">
                 <i class="bi bi-exclamation-triangle-fill me-2"></i>
@@ -147,6 +154,9 @@
                 </button>
             </div>
         </form>
+        <p class="text-center mt-4 mb-0" style="font-size: 0.9rem;">
+            Belum punya akun? <a href="{{ route('register') }}" class="text-decoration-none fw-semibold">Daftar sekarang</a>
+        </p>
         <p class="text-center mt-3 mb-0 text-muted" style="font-size:0.8rem;">
             &copy; {{ date('Y') }} Buku Tamu Digital
         </p>

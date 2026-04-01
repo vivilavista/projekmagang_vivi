@@ -17,6 +17,9 @@ class User extends Authenticatable
         'role',
         'nrp',
         'pangkat',
+        'nik',
+        'email',
+        'no_hp',
     ];
 
     protected $hidden = [
@@ -51,5 +54,10 @@ class User extends Authenticatable
     public function isOperator(): bool
     {
         return $this->role === 'operator';
+    }
+
+    public function isPengguna(): bool
+    {
+        return $this->role === 'pengguna';
     }
 }

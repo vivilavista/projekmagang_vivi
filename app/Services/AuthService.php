@@ -23,6 +23,23 @@ class AuthService
         return false;
     }
 
+    public function register(array $data): \App\Models\User
+    {
+        $user = \App\Models\User::create([
+            'nik' => $data['nik'],
+            'nama' => $data['nama'],
+            'email' => $data['email'],
+            'no_hp' => $data['no_hp'],
+            'username' => $data['username'],
+            'password' => \Illuminate\Support\Facades\Hash::make($data['password']),
+            'role' => 'pengguna',
+        ]);
+
+        $this->auditLog->log('Register', 'users', $user->id);
+
+        return $user;
+    }
+
     public function logout(): void
     {
         $userId = Auth::id();

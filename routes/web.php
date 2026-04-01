@@ -2,9 +2,17 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
-use App\Http\Controllers\Admin;
-use App\Http\Controllers\Petugas;
-use App\Http\Controllers\Operator;
+use App\Http\Controllers\ScanController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\TamuController;
+use App\Http\Controllers\Admin\KunjunganController as AdminKunjungan;
+use App\Http\Controllers\Admin\MasterTujuanController;
+use App\Http\Controllers\Admin\JadwalKunjunganController;
+use App\Http\Controllers\Operator\DashboardController as OperatorDashboard;
+use App\Http\Controllers\Operator\KunjunganController as OperatorKunjungan;
+use App\Http\Controllers\Petugas\DashboardController as PetugasDashboard;
+use App\Http\Controllers\Petugas\KunjunganController as PetugasKunjungan;
 use Illuminate\Support\Facades\Route;
 
 // Root: redirect berdasarkan auth status & role
@@ -14,6 +22,7 @@ Route::get('/', function () {
             'admin' => redirect()->route('admin.dashboard'),
             'petugas' => redirect()->route('petugas.dashboard'),
             'operator' => redirect()->route('operator.dashboard'),
+            'pengguna' => redirect()->route('booking.index'),
             default => redirect()->route('login'),
         };
     }
@@ -26,6 +35,10 @@ Route::get('/', function () {
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+    
+    // Fitur Register
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])
@@ -33,9 +46,9 @@ Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth');
 
 // ---------------------
-//  BOOKING PUBLIK (Tanpa Login)
+//  BOOKING PUBLIK (Auth Pengguna)
 // ---------------------
-Route::prefix('booking')->name('booking.')->group(function () {
+Route::middleware('auth')->prefix('booking')->name('booking.')->group(function () {
     Route::get('/', [BookingController::class, 'index'])->name('index');
     Route::post('/', [BookingController::class, 'store'])->name('store');
     Route::get('/status', [BookingController::class, 'status'])->name('status');
@@ -59,34 +72,37 @@ Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        Route::get('/dashboard', [Admin\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
 
         // Users
-        Route::resource('users', Admin\UserController::class)->except(['show']);
+        Route::resource('users', UserController::class)->except(['show']);
 
         // Tamu
-        Route::resource('tamu', Admin\TamuController::class)->except(['show']);
+        Route::resource('tamu', TamuController::class)->except(['show']);
 
         // Kunjungan (admin: list, edit, delete only)
-        Route::get('/kunjungan', [Admin\KunjunganController::class, 'index'])->name('kunjungan.index');
-        Route::get('/kunjungan/{id}/edit', [Admin\KunjunganController::class, 'edit'])->name('kunjungan.edit');
-        Route::put('/kunjungan/{id}', [Admin\KunjunganController::class, 'update'])->name('kunjungan.update');
-        Route::post('/kunjungan/{id}/checkout', [Admin\KunjunganController::class, 'checkout'])->name('kunjungan.checkout');
-        Route::delete('/kunjungan/{id}', [Admin\KunjunganController::class, 'destroy'])->name('kunjungan.destroy');
+        Route::get('/kunjungan', [AdminKunjungan::class, 'index'])->name('kunjungan.index');
+        Route::get('/kunjungan/{id}/edit', [AdminKunjungan::class, 'edit'])->name('kunjungan.edit');
+        Route::put('/kunjungan/{id}', [AdminKunjungan::class, 'update'])->name('kunjungan.update');
+        Route::post('/kunjungan/{id}/checkout', [AdminKunjungan::class, 'checkout'])->name('kunjungan.checkout');
+        Route::delete('/kunjungan/{id}', [AdminKunjungan::class, 'destroy'])->name('kunjungan.destroy');
+
+        // Generate Laporan
+        Route::get('/generate-laporan', [AdminKunjungan::class, 'generateLaporan'])->name('laporan.generate');
 
         // Master Tujuan
-        Route::resource('master-tujuan', Admin\MasterTujuanController::class)->except(['show']);
+        Route::resource('master-tujuan', MasterTujuanController::class)->except(['show']);
 
         // Jadwal Kunjungan (Booking)
-        Route::get('/jadwal', [Admin\JadwalKunjunganController::class, 'index'])->name('jadwal.index');
-        Route::get('/jadwal/kalender-data', [Admin\JadwalKunjunganController::class, 'kalenderData'])->name('jadwal.kalender-data');
-        Route::post('/jadwal/{jadwal}/setujui', [Admin\JadwalKunjunganController::class, 'setujui'])->name('jadwal.setujui');
-        Route::post('/jadwal/{jadwal}/tolak', [Admin\JadwalKunjunganController::class, 'tolak'])->name('jadwal.tolak');
-        Route::delete('/jadwal/{jadwal}', [Admin\JadwalKunjunganController::class, 'destroy'])->name('jadwal.destroy');
+        Route::get('/jadwal', [JadwalKunjunganController::class, 'index'])->name('jadwal.index');
+        Route::get('/jadwal/kalender-data', [JadwalKunjunganController::class, 'kalenderData'])->name('jadwal.kalender-data');
+        Route::post('/jadwal/{jadwal}/setujui', [JadwalKunjunganController::class, 'setujui'])->name('jadwal.setujui');
+        Route::post('/jadwal/{jadwal}/tolak', [JadwalKunjunganController::class, 'tolak'])->name('jadwal.tolak');
+        Route::delete('/jadwal/{jadwal}', [JadwalKunjunganController::class, 'destroy'])->name('jadwal.destroy');
 
         // Scan QR
-        Route::get('/scan', [\App\Http\Controllers\ScanController::class, 'index'])->name('scan.index');
-        Route::post('/scan/process', [\App\Http\Controllers\ScanController::class, 'process'])->name('scan.process');
+        Route::get('/scan', [ScanController::class, 'index'])->name('scan.index');
+        Route::post('/scan/process', [ScanController::class, 'process'])->name('scan.process');
     });
 
 // ---------------------
@@ -96,20 +112,20 @@ Route::middleware(['auth', 'role:petugas'])
     ->prefix('petugas')
     ->name('petugas.')
     ->group(function () {
-        Route::get('/dashboard', [Petugas\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [PetugasDashboard::class, 'index'])->name('dashboard');
 
         // Kunjungan (petugas: full CRUD + checkout + validasi)
-        Route::get('/kunjungan', [Petugas\KunjunganController::class, 'index'])->name('kunjungan.index');
-        Route::get('/kunjungan/create', [Petugas\KunjunganController::class, 'create'])->name('kunjungan.create');
-        Route::post('/kunjungan', [Petugas\KunjunganController::class, 'store'])->name('kunjungan.store');
-        Route::get('/kunjungan/{id}/edit', [Petugas\KunjunganController::class, 'edit'])->name('kunjungan.edit');
-        Route::put('/kunjungan/{id}', [Petugas\KunjunganController::class, 'update'])->name('kunjungan.update');
-        Route::post('/kunjungan/{id}/checkout', [Petugas\KunjunganController::class, 'checkout'])->name('kunjungan.checkout');
-        Route::post('/kunjungan/{id}/validasi', [Petugas\KunjunganController::class, 'validasi'])->name('kunjungan.validasi');
+        Route::get('/kunjungan', [PetugasKunjungan::class, 'index'])->name('kunjungan.index');
+        Route::get('/kunjungan/create', [PetugasKunjungan::class, 'create'])->name('kunjungan.create');
+        Route::post('/kunjungan', [PetugasKunjungan::class, 'store'])->name('kunjungan.store');
+        Route::get('/kunjungan/{id}/edit', [PetugasKunjungan::class, 'edit'])->name('kunjungan.edit');
+        Route::put('/kunjungan/{id}', [PetugasKunjungan::class, 'update'])->name('kunjungan.update');
+        Route::post('/kunjungan/{id}/checkout', [PetugasKunjungan::class, 'checkout'])->name('kunjungan.checkout');
+        Route::post('/kunjungan/{id}/validasi', [PetugasKunjungan::class, 'validasi'])->name('kunjungan.validasi');
 
         // Scan QR
-        Route::get('/scan', [\App\Http\Controllers\ScanController::class, 'index'])->name('scan.index');
-        Route::post('/scan/process', [\App\Http\Controllers\ScanController::class, 'process'])->name('scan.process');
+        Route::get('/scan', [ScanController::class, 'index'])->name('scan.index');
+        Route::post('/scan/process', [ScanController::class, 'process'])->name('scan.process');
     });
 
 // ---------------------
@@ -119,15 +135,15 @@ Route::middleware(['auth', 'role:operator'])
     ->prefix('operator')
     ->name('operator.')
     ->group(function () {
-        Route::get('/dashboard', [Operator\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [OperatorDashboard::class, 'index'])->name('dashboard');
 
         // Kunjungan: view + validasi only
-        Route::get('/kunjungan', [Operator\KunjunganController::class, 'index'])->name('kunjungan.index');
-        Route::get('/kunjungan/{id}', [Operator\KunjunganController::class, 'show'])->name('kunjungan.show');
-        Route::post('/kunjungan/{id}/validasi', [Operator\KunjunganController::class, 'validasi'])->name('kunjungan.validasi');
-        Route::post('/kunjungan/{id}/tolak', [Operator\KunjunganController::class, 'tolak'])->name('kunjungan.tolak');
+        Route::get('/kunjungan', [OperatorKunjungan::class, 'index'])->name('kunjungan.index');
+        Route::get('/kunjungan/{id}', [OperatorKunjungan::class, 'show'])->name('kunjungan.show');
+        Route::post('/kunjungan/{id}/validasi', [OperatorKunjungan::class, 'validasi'])->name('kunjungan.validasi');
+        Route::post('/kunjungan/{id}/tolak', [OperatorKunjungan::class, 'tolak'])->name('kunjungan.tolak');
 
         // Scan QR
-        Route::get('/scan', [\App\Http\Controllers\ScanController::class, 'index'])->name('scan.index');
-        Route::post('/scan/process', [\App\Http\Controllers\ScanController::class, 'process'])->name('scan.process');
+        Route::get('/scan', [ScanController::class, 'index'])->name('scan.index');
+        Route::post('/scan/process', [ScanController::class, 'process'])->name('scan.process');
     });

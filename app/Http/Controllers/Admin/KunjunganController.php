@@ -54,4 +54,11 @@ class KunjunganController extends Controller
 
         return redirect()->route('admin.kunjungan.index')->with('success', 'Data kunjungan berhasil dihapus.');
     }
+
+    public function generateLaporan(): View
+    {
+        $kunjungan = $this->kunjunganService->paginate(50, []);
+
+        return view('admin.kunjungan.laporan', compact('kunjungan'));
+    }
 }
