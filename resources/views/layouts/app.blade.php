@@ -207,6 +207,16 @@
             color: #d97706;
         }
 
+        .badge-aktif {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .badge-selesai {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
         /* ── CONTENT ── */
         .content-area {
             padding: 1.5rem 1.75rem;
