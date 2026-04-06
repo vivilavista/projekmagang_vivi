@@ -1,11 +1,16 @@
 {{-- Topbar --}}
 <div class="topbar">
-    <div>
-        <h6 class="page-title">@yield('page-title', 'Dashboard')</h6>
-        <span class="meta">
-            <i class="bi bi-calendar3 me-1"></i>
-            {{ now()->isoFormat('dddd, D MMMM YYYY') }}
-        </span>
+    <div class="d-flex align-items-center">
+        <button class="btn-toggle-sidebar toggle-sidebar">
+            <i class="bi bi-list"></i>
+        </button>
+        <div>
+            <h6 class="page-title">@yield('page-title', 'Dashboard')</h6>
+            <span class="meta">
+                <i class="bi bi-calendar3 me-1"></i>
+                {{ now()->isoFormat('dddd, D MMMM YYYY') }}
+            </span>
+        </div>
     </div>
     <div class="d-flex align-items-center gap-3">
         <a href="{{ route('booking.index') }}" class="btn btn-sm btn-outline-secondary" target="_blank"

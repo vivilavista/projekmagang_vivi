@@ -2,10 +2,37 @@
 @section('title', 'Booking Kunjungan')
 
 @section('content')
-    <div
-        style="min-height:100vh;background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 50%,#0ea5e9 100%);display:flex;align-items:center;justify-content:center;padding:2rem 1rem;">
-        <div
-            style="background:#fff;border-radius:1.5rem;box-shadow:0 20px 60px rgba(0,0,0,0.15);max-width:620px;width:100%;padding:2.5rem;">
+    <style>
+        .booking-card {
+            background: #fff;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            max-width: 620px;
+            width: 100%;
+            padding: 2.5rem;
+        }
+
+        .booking-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #0ea5e9 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        @media (max-width: 575.98px) {
+            .booking-card {
+                padding: 1.5rem 1.25rem;
+                border-radius: 1.25rem;
+            }
+            .booking-container {
+                padding: 1rem 0.5rem;
+            }
+        }
+    </style>
+    <div class="booking-container">
+        <div class="booking-card">
             <div class="text-center mb-4">
                 <div class="mb-3"
                     style="width:56px;height:56px;border-radius:50%;background:#dbeafe;display:flex;align-items:center;justify-content:center;margin:0 auto;">

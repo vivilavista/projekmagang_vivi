@@ -29,20 +29,53 @@
         body {
             background: #f0f5fb;
             color: #1a1a2e;
+            overflow-x: hidden;
         }
 
         /* ── SIDEBAR ── */
         .sidebar {
             width: var(--sidebar-width);
-            min-height: 100vh;
+            height: 100vh;
             background: linear-gradient(170deg, var(--c-darkest) 0%, var(--c-dark) 60%, #073a7a 100%);
             position: fixed;
             top: 0;
             left: 0;
-            z-index: 100;
+            z-index: 1050;
             box-shadow: 4px 0 24px rgba(0, 15, 34, 0.35);
             display: flex;
             flex-direction: column;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Mobile sidebar hidden by default */
+        @media (max-width: 991.98px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+            }
+
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.4);
+                backdrop-filter: blur(2px);
+                z-index: 1040;
+            }
+
+            .sidebar-overlay.show {
+                display: block;
+            }
         }
 
         .sidebar-brand {
@@ -114,6 +147,7 @@
         .main-content {
             margin-left: var(--sidebar-width);
             min-height: 100vh;
+            transition: margin-left 0.3s ease;
         }
 
         .topbar {
@@ -127,6 +161,15 @@
             position: sticky;
             top: 0;
             z-index: 50;
+        }
+
+        @media (max-width: 575.98px) {
+            .topbar {
+                padding: 0.7rem 1rem;
+            }
+            .sidebar-brand {
+                padding: 1.2rem 1rem;
+            }
         }
 
         .topbar .page-title {
@@ -167,6 +210,12 @@
         /* ── CONTENT ── */
         .content-area {
             padding: 1.5rem 1.75rem;
+        }
+
+        @media (max-width: 767.98px) {
+            .content-area {
+                padding: 1rem;
+            }
         }
 
         /* ── STAT CARDS ── */
@@ -303,12 +352,33 @@
             background-color: var(--c-dark);
             border-color: var(--c-dark);
         }
+
+        /* Sidebar toggle utilities */
+        .btn-toggle-sidebar {
+            display: none;
+            background: transparent;
+            border: none;
+            color: var(--c-dark);
+            font-size: 1.4rem;
+            padding: 0;
+            margin-right: 1rem;
+        }
+
+        @media (max-width: 991.98px) {
+            .btn-toggle-sidebar {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
     </style>
     @yield('styles')
 </head>
 
 <body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
     @include('partials.sidebar')
+    
     <div class="main-content">
         @include('partials.navbar')
         <div class="content-area">
@@ -316,8 +386,45 @@
             @yield('content')
         </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const toggleBtns = document.querySelectorAll('.toggle-sidebar');
+
+            toggleBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    sidebar.classList.toggle('show');
+                    overlay.classList.toggle('show');
+                    document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : '';
+                });
+            });
+
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('show');
+                overlay.classList.remove('show');
+                document.body.style.overflow = '';
+            });
+
+            // Close sidebar when clicking internal links on mobile
+            const navLinks = sidebar.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth < 992) {
+                        sidebar.classList.remove('show');
+                        overlay.classList.remove('show');
+                        document.body.style.overflow = '';
+                    }
+                });
+            });
+        });
+    </script>
     @yield('scripts')
 </body>
+
+</html>
+
 
 </html>
