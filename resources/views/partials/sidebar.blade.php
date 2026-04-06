@@ -1,14 +1,19 @@
 {{-- Sidebar --}}
 <div class="sidebar">
-    <div class="sidebar-brand">
-        <div class="d-flex align-items-center gap-2 mb-1">
-            <div
-                style="width:32px;height:32px;border-radius:8px;background:var(--c-lightest);display:flex;align-items:center;justify-content:center;">
-                <i class="bi bi-book-half" style="color:var(--c-dark);font-size:1rem;"></i>
+    <div class="sidebar-brand d-flex align-items-center justify-content-between">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <div
+                    style="width:32px;height:32px;border-radius:8px;background:var(--c-lightest);display:flex;align-items:center;justify-content:center;">
+                    <i class="bi bi-book-half" style="color:var(--c-dark);font-size:1rem;"></i>
+                </div>
+                <h5 class="mb-0">Buku Tamu</h5>
             </div>
-            <h5 class="mb-0">Buku Tamu</h5>
+            <small>Sistem Digital</small>
         </div>
-        <small>Sistem Digital</small>
+        <button class="btn btn-link link-light p-0 d-lg-none toggle-sidebar" style="font-size: 1.5rem;">
+            <i class="bi bi-x"></i>
+        </button>
     </div>
 
     <nav class="nav flex-column mt-2 flex-grow-1" style="overflow-y:auto;">

@@ -26,6 +26,14 @@
             padding: 2.5rem;
         }
 
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 1.5rem 1.25rem;
+                border-radius: 1.25rem;
+                margin: 1rem;
+            }
+        }
+
         .login-logo {
             width: 70px;
             height: 70px;
